@@ -1,0 +1,319 @@
+ocio_profile_version: 1
+search_path: transforms:looks
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+
+description: RED IPP2 for OCIO v1.2
+
+roles:
+  color_picking: linear
+  color_timing: log3g10_redwg
+  compositing_log: log3g10_redwg
+  data: raw
+  default: linear
+  matte_paint: cineonlog_rec709
+  rendering: linear
+  scene_linear: linear
+  texture_paint: linear
+  mari_monitor: rec709_display
+  mari_scalar_monitor: rec709_display
+  mari_color_picker: rec709_display
+  mari_working: linear
+  mari_int8: srgb_texture
+  mari_int16: srgb_texture
+  mari_int_scalar: raw
+  mari_scalar8: raw
+  mari_float: linear
+  substance_3d_painter_standard_srgb: srgb_texture
+  substance_3d_painter_bitmap_import_8bit: srgb_texture
+  substance_3d_painter_bitmap_import_16bit: srgb_texture
+  substance_3d_painter_bitmap_import_floating: linear
+  substance_3d_painter_substance_material: srgb_texture
+  substance_3d_painter_bitmap_export_8bit: srgb_texture
+  substance_3d_painter_bitmap_export_16bit: srgb_texture
+  substance_3d_painter_bitmap_export_floating: linear   
+
+displays:
+  Rec1886 100 nits video dim:
+    - !<View> {name: RED IPP2, colorspace: RED IPP2 - Rec.709 - 2.4 Gamma}
+    - !<View> {name: Un-tone-mapped, colorspace: rec709_display}
+    - !<View> {name: Log, colorspace: cineonlog_rec709}
+    - !<View> {name: Raw, colorspace: raw}    
+
+active_displays: [Rec1886 100 nits Video dim]
+active_views: [RED IPP2, Un-tone-mapped, Log, Raw]
+
+##################################### SCENE-REFERRED ##############################################
+
+colorspaces:
+  - !<ColorSpace>
+    name: linear
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - Rec.709  
+    to_reference: !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+  - !<ColorSpace>
+    name: cineonlog_rec709
+    bitdepth: 32f    
+    family: SceneReferred
+    description: Grading Space
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: CineonLog_2_Linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1]}    
+
+  - !<ColorSpace>
+    name: log3g10_redwg
+    bitdepth: 32f    
+    family: SceneReferred
+    description: Grading Space
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: REDLog3G10_to_linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.784959, 0.083805, 0.131242, 0, 0.292223, 0.843701, -0.135925, 0, -0.073769, -0.314639, 1.388537, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: lin_xyz
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear reference space
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+  - !<ColorSpace>
+    name: aces
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - AP0
+    to_reference: !<MatrixTransform> {matrix: [0.9999017, 0.0000000, 0.0000983, 0, 0.3439664, 0.7281661, -0.0721325, 0, 0.0000000, 0.0000000, 1.0000000, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]  
+
+  - !<ColorSpace>
+    name: acescg
+    bitdepth: 32f
+    family: SceneReferred
+    description: Linear - AP1  
+    to_reference: !<MatrixTransform> {matrix: [0.6953833105, 0.1406652586, 0.1639514308, 0, 0.2722287168, 0.6740817658, 0.0536895174, 0, -0.0055258826, 0.0040252103, 1.0015006723, 0, 0, 0, 0, 1]}
+    allocation: lg2
+    allocationvars: [-10, 7, 0.0056065625]
+
+##################################### DISPLAY-REFERRED ##############################################
+
+  - !<ColorSpace>
+    name: RED IPP2 - Rec.709 - 2.4 Gamma
+    family: DisplayReferred
+    bitdepth: 32f
+    from_reference: !<GroupTransform>
+      children:
+        - !<ColorSpaceTransform> {src: lin_xyz, dst: log3g10_redwg}
+        - !<FileTransform> {src: RWG_Log3G10_to_REC709_BT1886_with_MEDIUM_CONTRAST_and_R_2_Medium_size_64_v1.13.cub, interpolation: tetrahedral}
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: RWG_Log3G10_to_REC709_BT1886_with_MEDIUM_CONTRAST_and_R_2_Medium_size_64_v1.13_inv.cub, interpolation: tetrahedral}
+        - !<ColorSpaceTransform> {src: log3g10_redwg, dst: lin_xyz}    
+
+############################################## UTILITY ##############################################         
+
+  - !<ColorSpace>
+    name: raw
+    family: Utility
+    equalitygroup: Raw
+    bitdepth: 32f
+    description: The Raw color space
+    isdata: true
+    allocation: uniform
+    allocationvars: [0, 1]
+
+  - !<ColorSpace>
+    name: srgb_texture
+    family: Utility
+    equalitygroup: sRGB - Texture
+    bitdepth: 32f
+    description: The sRGB - Texture color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
+        - !<FileTransform> {src: linear_to_sRGB.spi1d, interpolation: linear}
+
+  - !<ColorSpace>
+    name: rec709_display
+    family: Utility
+    equalitygroup: Rec.709 - Display
+    bitdepth: 32f
+    description: The Rec.709 - Display color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.4338873, 0.3762240, 0.1898886, 0, 0.2126390, 0.7151687, 0.0721923, 0, 0.0177500, 0.1094476, 0.8728023, 0, 0, 0, 0, 1], direction: inverse}
+        - !<FileTransform> {src: linear_to_rec1886.spi1d, interpolation: linear}
+
+######################################## LOOKS ######################################################
+
+looks:
+  - !<Look>
+    name: RED_Achromic
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_Achromic.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_AWASH
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_AWASH.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BASE
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BASE.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BIPOLAR
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BIPOLAR.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BLAU
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BLAU.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BLEACH_1
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BLEACH_1.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BLEACH_2
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BLEACH_2.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BW_0100
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0100.cube, interpolation: tetrahedral}
+
+  - !<Look>    
+    name: RED_BW_0200
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0200.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BW_0300
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0300.cube, interpolation: tetrahedral}
+  - !<Look>
+    name: RED_BW_0400
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0400.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BW_0500
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0500.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BW_0600
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0600.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_BW_0700
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_BW_0700.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_CAUSTIC
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_CAUSTIC.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_CHROMATIC
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_CHROMATIC.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_DEEP_CHROMA
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_DEEP_CHROMA.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_FilmBias
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_FilmBias.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_FilmBiasBleachBypass
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_FilmBiasBleachBypass.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_FilmBiasOffset
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_FilmBiasOffset.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_FLASH
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_FLASH.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_FLUORESCE
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_FLUORESCE.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_GRIME
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_GRIME.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_LUSH
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_LUSH.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_MAUVE
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_MAUVE.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_NARCISSUS
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_NARCISSUS.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_PASTEL
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_PASTEL.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_PROCESS
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_PROCESS.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_ST4
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_ST4.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_SUPERCOLOR
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_SUPERCOLOR.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_TECH
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_TECH.cube, interpolation: tetrahedral}
+
+  - !<Look>
+    name: RED_ZONE
+    process_space: log3g10_redwg
+    transform: !<FileTransform> {src: RED_ZONE.cube, interpolation: tetrahedral}        
