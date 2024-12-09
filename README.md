@@ -9,7 +9,7 @@ There is no need to go wide gamut or do anything complex to **craft beautiful im
 # Image Examples
 <p>
     <img ![hue_sweep_openDRT_0_3_5] width="144" height="81" src="https://github.com/user-attachments/assets/0dfa6ad7-d4db-416e-bc92-fede1a4cd9f4" >  
-    <img ![photographic_scene_openDRT_0_3_5] width="144" height="81" src="(https://github.com/user-attachments/assets/dcbbc96d-cd71-4daf-a802-fa270cc8cad0" >
+    <img ![photographic_scene_openDRT_0_3_5] width="144" height="81" src="(https://github.com/user-attachments/assets/dd133bba-4ed6-4621-ab73-1520921c7d42" >
     <img ![light_sabers_openDRT_0_3_5] width="144" height="81" src="https://github.com/user-attachments/assets/af99c0f8-8cef-42a2-a9cc-0aa22d00fe7d" >
     <img ![lego_sailors_openDRT_0_3_5] width="144" height="81" src="https://github.com/user-attachments/assets/7caeb8ab-23cf-4206-a889-87255b1afed0" >
     <img ![louise_concert_openDRT_0_3_5] width="144" height="81" src="https://github.com/user-attachments/assets/06f2dc8a-0ad2-40b1-9785-266ec69c8f51" >
