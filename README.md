@@ -27,7 +27,7 @@ Original files (encoded in "linear-AP0") are available [here](https://www.dropbo
 * One may easily add several colorspaces or displays for HDR output if needed (such as "p3_d65_pq")
 
 # Looks
-* 32 looks from the [ARRI Look Library](https://www.red.com/download/red-creative-lut-kit) have been uploaded
+* 32 looks from the [RED Creative LUT Kit](https://www.red.com/download/red-creative-lut-kit) have been uploaded
 * The use of Looks is highly recommended with RED IPP2
 * To use one of the looks, you need to combine it with a View. Like this for instance:
 
